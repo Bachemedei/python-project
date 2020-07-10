@@ -65,32 +65,45 @@ def process_weather(forecast_file):
     with open(forecast_file) as data_file:
         data = json.load(data_file)
 
-    dates = []
-    min_temps = []
-    max_temps = []
-    forecast_length = 0
-    min_total = 0
-    max_total = 0
+  
+    extracted_data = {
+        "dates": [],
+        "min_temps": [],
+        "max_temps": [],
+        "forecast_length": [0],
+        "min_total": [0],
+        "max_total": [0],
+        "min_mean": [],
+        "max_mean": [],
+        "overall_min": [],
+        "overall_max": [],
+        "coldest_day": [],
+        "hottest_day": []
+    }
+    counter = 0
 
     for items in data["DailyForecasts"]:
-        date = convert_date(items["Date"])
-        dates.append(date)
-        minimum = (convert_f_to_c(items["Temperature"]["Minimum"]["Value"]))
-        min_temps.append(minimum)
-        maximum = (convert_f_to_c(items["Temperature"]["Maximum"]["Value"]))
-        max_temps.append(maximum)
-        min_total =+ minimum
-        max_total =+ maximum
-        forecast_length =+ 1
-        overall_min = min(min_temps)
-        overall_max = max(max_temps)
-        if minimum == overall_min:
-            coldest_day = date
-        if maximum == overall_max:
-            hottest_day = date
-
-
+        counter = counter + 1
+        extracted_data["dates"].append(convert_date(items["Date"]))
+        extracted_data["min_temps"].append(items["Temperature"]["Minimum"]["Value"])
+        extracted_data["max_temps"].append(items["Temperature"]["Maximum"]["Value"])
+        extracted_data["forecast_length"] = counter
     
+    for items in extracted_data.items():
+        items["dates"] = convert_date(items["dates"])
+        items["min_temps"] = convert_f_to_c(items["min_temps"])
+        items["max_temps"] = convert_f_to_c(items["max_temps"])
+        items["min_total"] = sum(items["min_temps"])
+        items["min_mean"] = calculate_mean(items["min_total"], items["forecast_length"])
+        items["max_total"] = sum(items["max_temps"])
+        items["max_mean"] = calculate_mean(items["max_total"], items["forecast_length"])
+        items["overall_min"] = min("min_temps")
+        if items["overall_min"] == items["min_temps"]:
+            items["coldest_day"] = items["dates"]
+        items["overall_max"] = max("max_temps")
+        if items["overall_max"] == items["max_temps"]:
+            items["hottest_day"] = items["dates"]
+
 
     # print("5 Day Overview")
     # print(f"    The lowest temperature will be {lowest_min}, and will occur on {coldest_day}.")
