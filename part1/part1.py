@@ -68,36 +68,29 @@ def process_weather(forecast_file):
     dates = []
     min_temps = []
     max_temps = []
-    overall_min = ""
-    overall_max = ""
-    forecast_length = "0"
+    forecast_length = 0
+    min_total = 0
+    max_total = 0
 
     for items in data["DailyForecasts"]:
-        dates.append(convert_date(items["Date"]))
-        min_temps.append(convert_f_to_c(items["Temperature"]["Minimum"]["Value"]))
-        max_temps.append(convert_f_to_c(items["Temperature"]["Maximum"]["Value"]))
+        date = convert_date(items["Date"])
+        dates.append(date)
+        minimum = (convert_f_to_c(items["Temperature"]["Minimum"]["Value"]))
+        min_temps.append(minimum)
+        maximum = (convert_f_to_c(items["Temperature"]["Maximum"]["Value"]))
+        max_temps.append(maximum)
+        min_total =+ minimum
+        max_total =+ maximum
+        forecast_length =+ 1
+        overall_min = min(min_temps)
+        overall_max = max(max_temps)
+        if minimum == overall_min:
+            coldest_day = date
+        if maximum == overall_max:
+            hottest_day = date
+
 
     
-    print(dates)
-    print(min_temps)
-    print(max_temps)
-
-    # min_total = sum(min_temperatures)
-    # min_length = len(min_temperatures)
-    # min_mean = format_temperature(calculate_mean(min_total, min_length))
-    # lowest_min = format_temperature(min(min_temperatures))
-    
-    # max_total = sum(max_temperatures)
-    # max_length = len(max_temperatures)
-    # max_mean = format_temperature(calculate_mean(max_total, max_length))
-    # highest_max = format_temperature(max(max_temperatures))
-
-
-    # for items in data["DailyForecasts"]:
-    #     if items["Temperature"]["Minimum"]["Value"] == min(min_temperatures):
-    #         coldest_day = items["Date"]
-    #     if items["Temperature"]["Maximum"]["Value"] == max(max_temperatures):
-    #         hottest_day = items["Date"]
 
     # print("5 Day Overview")
     # print(f"    The lowest temperature will be {lowest_min}, and will occur on {coldest_day}.")
