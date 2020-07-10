@@ -48,8 +48,8 @@ def calculate_mean(total, num_items):
     Returns:
         An integer representing the mean of the numbers.
     """
-    total = round(total)
     mean = total/num_items
+    mean = round(mean, 1)
     return mean
 
 
@@ -66,52 +66,63 @@ def process_weather(forecast_file):
         data = json.load(data_file)
 
   
-    extracted_data = {
-        "dates": [],
-        "min_temps": [],
-        "max_temps": [],
-        "forecast_length": [0],
-        "min_total": [0],
-        "max_total": [0],
-        "min_mean": [],
-        "max_mean": [],
-        "overall_min": [],
-        "overall_max": [],
-        "coldest_day": [],
-        "hottest_day": []
-    }
-    counter = 0
+    dates = []
+    min_temps = []
+    max_temps = []
+    forecast_length = 0
+    day_description = []
+    day_rain = []
+    night_description = []
+    night_rain = []
 
     for items in data["DailyForecasts"]:
-        counter = counter + 1
-        extracted_data["dates"].append(convert_date(items["Date"]))
-        extracted_data["min_temps"].append(items["Temperature"]["Minimum"]["Value"])
-        extracted_data["max_temps"].append(items["Temperature"]["Maximum"]["Value"])
-        extracted_data["forecast_length"] = counter
+        date = convert_date(items["Date"])
+        dates.append(date)
+        minimum = (convert_f_to_c(items["Temperature"]["Minimum"]["Value"]))
+        min_temps.append(minimum)
+        maximum = (convert_f_to_c(items["Temperature"]["Maximum"]["Value"]))
+        max_temps.append(maximum)
+        overall_min = min(min_temps)
+        overall_max = max(max_temps)
+        if minimum == overall_min:
+            coldest_day = date
+        if maximum == overall_max:
+            hottest_day = date
+        day_description.append(items["Day"]["LongPhrase"])
+        day_rain.append(items["Day"]["RainProbability"])
+        night_description.append(items["Night"]["LongPhrase"])
+        night_rain.append(items["Night"]["RainProbability"])
+        
+
+    min_total = sum(min_temps)
+    min_mean = calculate_mean(min_total, len(min_temps))
+    max_total = sum(max_temps)
+    max_mean = calculate_mean(max_total, len(max_temps))
+
+    overview = f"""{len(dates)} Day Overview
+    The lowest temperature will be {format_temperature(overall_min)}, and will occur on {coldest_day}.
+    The highest temperature will be {format_temperature(overall_max)}, and will occur on {hottest_day}.        
+    The average low this week is {format_temperature(min_mean)}.
+    The average high this week is {format_temperature(max_mean)}.
+    """
     
-    for items in extracted_data.items():
-        items["dates"] = convert_date(items["dates"])
-        items["min_temps"] = convert_f_to_c(items["min_temps"])
-        items["max_temps"] = convert_f_to_c(items["max_temps"])
-        items["min_total"] = sum(items["min_temps"])
-        items["min_mean"] = calculate_mean(items["min_total"], items["forecast_length"])
-        items["max_total"] = sum(items["max_temps"])
-        items["max_mean"] = calculate_mean(items["max_total"], items["forecast_length"])
-        items["overall_min"] = min("min_temps")
-        if items["overall_min"] == items["min_temps"]:
-            items["coldest_day"] = items["dates"]
-        items["overall_max"] = max("max_temps")
-        if items["overall_max"] == items["max_temps"]:
-            items["hottest_day"] = items["dates"]
+    index = 0
+
+    while index != len(dates):
+        overview = overview + f"""
+-------- {dates[index]} --------
+Minimum Temperature: {format_temperature(min_temps[index])}
+Maximum Temperature: {format_temperature(max_temps[index])}
+Daytime: {day_description[index]}
+    Chance of rain:  {day_rain[index]}%
+Nighttime: {night_description[index]}
+    Chance of rain:  {night_rain[index]}%
+    """
+        index = index + 1
+
+    return overview
 
 
-    # print("5 Day Overview")
-    # print(f"    The lowest temperature will be {lowest_min}, and will occur on {coldest_day}.")
-    # print(f"    The highest temperature will be {highest_max}, and will occur on {hottest_day}.")
-    # print(f"    The average low this week is {min_mean}.")
-    # print(f"    The average high this week is {max_mean}.")
-    # print()
-    
     # for items in data["DailyForecasts"]:
     #     print(f"""-------- { items[Date] } --------""")
     #     Minimum Temperature: { items["Temperature"]["Minimum"]["ValueString"] }
