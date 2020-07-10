@@ -97,7 +97,7 @@ def process_weather(forecast_file):
 
     overview = f"""{len(dates)} Day Overview
     The lowest temperature will be {format_temperature(overall_min)}, and will occur on {coldest_day}.
-    The highest temperature will be {format_temperature(overall_max)}, and will occur on {hottest_day}. 
+    The highest temperature will be {format_temperature(overall_max)}, and will occur on {hottest_day}.
     The average low this week is {format_temperature(min_mean)}.
     The average high this week is {format_temperature(max_mean)}.\n"""
     
