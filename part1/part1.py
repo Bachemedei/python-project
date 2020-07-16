@@ -104,7 +104,7 @@ def process_weather(forecast_file):
     index = 0
 
     while index != len(dates):
-        overview = overview + f"""
+        overview += f"""
 -------- {dates[index]} --------
 Minimum Temperature: {format_temperature(min_temps[index])}
 Maximum Temperature: {format_temperature(max_temps[index])}
