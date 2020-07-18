@@ -12,7 +12,7 @@ def convert_f_to_c(temp_in_farenheit):
     celcius = (temp_in_farenheit - 32) * 0.5556
     return celcius
 
-with open("data/forecast_5days_a.json") as data_file:
+with open("data/forecast_10days.json") as data_file:
     data = json.load(data_file)
 
 date = []

@@ -15,6 +15,7 @@ def convert_date(iso_string):
 
 def convert_time(iso_string):
     d = datetime.strptime(iso_string, "%Y-%m-%dT%H:%M:%S%z")
+    return d.strftime("%H:%M")
 
 def convert_f_to_c(temp_in_farenheit):
     celcius = (temp_in_farenheit - 32) * 0.5556
@@ -33,6 +34,7 @@ def process_weather(historical_file):
     precip_total = 0
     daylight_hours = 0
     uv_index = []
+    weather_text = {}
     
     index = 0
 
@@ -47,7 +49,11 @@ def process_weather(historical_file):
         if item["IsDayTime"] == True:
             daylight_hours += 1
         uv_index.append(item["UVIndex"])
-        index +=1
+        text = item["WeatherText"]
+        if text not in weather_text:
+            weather_text[text] = 1
+        else:
+             weather_text[text] += 1
 
     min_temp = min(temps)
     min_hour = time[temps.index(min(temps))]
@@ -64,29 +70,41 @@ def process_weather(historical_file):
     The maximum UV index of {max_uv} occurred at {max_uv_hour}.
     """  
 
-    # with open(f"{len(time)}hour_output.txt", "w") as txt_file:
-    #     txt_file.write(output)
+    with open(f"{len(time)}hour_output.txt", "w") as txt_file:
+        txt_file.write(output)
         
-    return {"temps" : temps, "real_feel_temps" : real_feel_temps, "iso_time" : iso_time, "time" : time, "date" : date}
-
-data = process_weather("data/historical_6hours.json")
-time = []
+    return {"temps" : temps, "real_feel_temps" : real_feel_temps, "iso_time" : iso_time, "time" : time, "date" : date}, weather_text
 
 
+
+data, weather_text = process_weather("data/historical_24hours_b.json")
+
+data["time"].sort()
 if len(data["time"]) < 24:
-    title = data["time"][0] + " to "+ data["time"][-1]+ " on "+ data["date"]
+    title = "Between " + data["time"][0] + " to " + data["time"][-1] + " on " + data["date"]
 else: 
-    title = data["date"]
+    title = "for " + data["date"]
 
-
-fig = go.Figure()
-fig.add_trace(go.Box(y=data["temps"], name="Temperature"))
-fig.add_trace(go.Box(y=data["real_feel_temps"], name="Real Feel Temperature"))
-fig.update_layout(
-    title=f"Hourly Actual vs Real Feel Temperatures in Celcius for {title}",
+fig_box = go.Figure()
+fig_box.add_trace(go.Box(y=data["temps"], name="Temperature"))
+fig_box.add_trace(go.Box(y=data["real_feel_temps"], name="Real Feel Temperature"))
+fig_box.update_layout(
+    title=f"Hourly Actual vs Real Feel Temperatures in Celcius {title}",
     yaxis_title="Temperature in Celcius",
     legend_title="Legend"
 )
+fig_box.show()
+x_vars = []
+y_vars = []
+for text, count in weather_text.items():
+    x_vars.append(text)
+    y_vars.append(count)
 
-fig.show()
+fig_bar = px.bar(y=y_vars, x=x_vars,
+title = f"Number of times each Weather Text appeared {title}"
+)
+fig_bar.update_yaxes(title_text="Count")
+fig_bar.update_xaxes(title_text="Weather Text")
+fig_bar.show()
+
 

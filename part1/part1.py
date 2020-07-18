@@ -1,4 +1,4 @@
- import json
+import json
 from datetime import datetime
 
 DEGREE_SYBMOL = u"\N{DEGREE SIGN}C"
@@ -115,9 +115,11 @@ Nighttime: {night_description[index]}
         index = index + 1
 
     overview = overview + "\n"
+    with open(f"{len(dates)}day_output.txt", "w") as txt_file:
+        txt_file.write(overview)
     return overview
 
 if __name__ == "__main__":
-    print(process_weather("data/forecast_10days.json"))
+    print(process_weather("data/forecast_5days_b.json"))
 
 
