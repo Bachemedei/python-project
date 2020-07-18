@@ -1,7 +1,6 @@
 import json
 import plotly.express as px
 import pandas as pd
-import json
 from datetime import datetime
 
 def convert_date(iso_string):
@@ -31,35 +30,33 @@ for items in data["DailyForecasts"]:
     
 data = {
     "Date" : date,
-    "MinimumTemp" : min_temp,
-    "MaxTemp" : max_temp,
-    "RealFeelMin" : real_feel_min,
-    "RealFeelShadeMin" : real_feel_shade_min,
+    "Minimum Temperature" : min_temp,
+    "Maximum Temperature" : max_temp,
+    "Real Feel Minimum" : real_feel_min,
+    "Real Feel Shade Minimum" : real_feel_shade_min,
 }
-print(data)
+
+var_1 = ["Minimum Temperature", "Maximum Temperature"]
 
 fig_1 = px.line(data,
 x="Date", 
-y=["MinimumTemp", "MaxTemp"],
+y=var_1,
 labels={"variable" : "Legend"},
 title=f"Minimum and Maximum Temperature Forecast for {date[0]} to {date[-1]}"
 )
 fig_1.update_yaxes(title_text="Temperature in Celcius")
 fig_1.show()
 
-stuff =["MinimumTemp", "RealFeelMin", "RealFeelShadeMin"]
+var_2 = ["Minimum Temperature", "Real Feel Minimum", "Real Feel Shade Minimum"]
+
 fig_2 = px.line(data,
 x="Date",
-y=stuff,
-labels={
-    "variable" : "Legend",
-    "MinimumTemp" : "Minimum Temperature in Celcius",
-    "RealFeelMin" : "Real Feel Minimum Temperature in Celcius",
-    "RealFeelShadeMin" : "Real Feel Shade Minimum Temperature in Celcius"
-},
+y=var_2,
+labels={"variable" : "Legend"},
 title=f"Actual Minimum, Real Feel Minimum, and Real Feel Shade Minimum Forecast for {date[0]} to {date[-1]}"
-
 )
 fig_2.update_yaxes(title_text="Temperature in Celcius")
 
 fig_2.show()
+
+
