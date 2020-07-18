@@ -1,4 +1,4 @@
-import json
+ import json
 from datetime import datetime
 
 DEGREE_SYBMOL = u"\N{DEGREE SIGN}C"
@@ -23,7 +23,7 @@ def convert_date(iso_string):
         A date formatted like: Weekday Date Month Year
     """
     d = datetime.strptime(iso_string, "%Y-%m-%dT%H:%M:%S%z")
-    return d.strftime('%A %d %B %Y')
+    return d.strftime("%A %d %B %Y")
 
 
 def convert_f_to_c(temp_in_farenheit):
